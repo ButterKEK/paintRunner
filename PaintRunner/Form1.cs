@@ -24,14 +24,6 @@ namespace PaintRunner
         int Enemy04Speed = 0;
 
 
-        //Food Score
-        int AppleScore = 0;
-        int PearScore = 0;
-        int LemonScore = 0;
-        int CherryScore = 0;
-        int GrapeScore = 0;
-        int PineappleScore = 0;
-
         //Powerup Radomizer
         int PowerupRandom = 0;
 
@@ -40,7 +32,7 @@ namespace PaintRunner
         bool ShieldActive = false;
 
         PictureBox[] Foods;
-        String[] FoodNames = { "Apple", "Pear", "Lemon", "Cherry", "Grape", "Pineapple","Powerup" };
+        String[] FoodNames = { "Apple", "Pear", "Lemon", "Cherry", "Grape", "Pineapple", "Powerup" };
         int[] StateOfFoods = new int[6];
         Dictionary<int, int> FoodStates = new Dictionary<int, int>() {
             {0, 50 },
@@ -123,11 +115,11 @@ namespace PaintRunner
             scoreBoards = new Dictionary<int, Label>()
             {
                 { 0,AppleCounter },
-            { 1, PearCounter},
-            { 2, LemonCounter},
-            { 3, CherryCounter},
-            { 4, GrapeCounter},
-            { 5, PineappleCounter}
+                { 1, PearCounter},
+                { 2, LemonCounter},
+                { 3, CherryCounter},
+                { 4, GrapeCounter},
+                { 5, PineappleCounter}
             };
             //Random Food Placement
             Food01.Location = new Point(random.Next(67, 908), random.Next(67, 908));
@@ -177,50 +169,37 @@ namespace PaintRunner
         //Key Detection
         private void Form1_KeyDown(object sender, KeyEventArgs e)
         {
-            if (lost == false)
+            if (!lost && !pause)
             {
-                if (pause == false)
+
+                MoveTimersStop();
+                switch (e.KeyCode)
                 {
-                    if (e.KeyCode == Keys.W)
-                    {
+                    case (Keys.W):
                         MoveUpTimer.Start();
-
-                        MoveDownTimer.Stop();
-                        MoveLeftTimer.Stop();
-                        MoveRightTimer.Stop();
-                    }
-                    if (e.KeyCode == Keys.A)
-                    {
+                        break;
+                    case (Keys.A):
                         MoveLeftTimer.Start();
-
-                        MoveUpTimer.Stop();
-                        MoveDownTimer.Stop();
-                        MoveRightTimer.Stop();
-                    }
-                    if (e.KeyCode == Keys.S)
-                    {
+                        break;
+                    case (Keys.S):
                         MoveDownTimer.Start();
-
-                        MoveUpTimer.Stop();
-                        MoveLeftTimer.Stop();
-                        MoveRightTimer.Stop();
-                    }
-                    if (e.KeyCode == Keys.D)
-                    {
+                        break;
+                    case (Keys.D):
                         MoveRightTimer.Start();
-
-                        MoveUpTimer.Stop();
-                        MoveDownTimer.Stop();
-                        MoveLeftTimer.Stop();
-                    }
+                        break;
                 }
+
             }
+
         }
         //Reset the Game
         private void ResetButton_Click(object sender, EventArgs e)
         {
             //Reset Player
             Player.Location = new Point(947, 26);
+
+            //Reset scores
+            scores = new int[6];
 
             //Reset Enemies
             XEnemy01 = 1070;
@@ -263,18 +242,10 @@ namespace PaintRunner
             score = 0;
             Scoreboard.Text = "Score: " + score;
 
-            AppleScore = 0;
-            AppleCounter.Text = "" + AppleScore;
-            PearScore = 0;
-            PearCounter.Text = "" + PearScore;
-            LemonScore = 0;
-            LemonCounter.Text = "" + LemonScore;
-            CherryScore = 0;
-            CherryCounter.Text = "" + CherryScore;
-            GrapeScore = 0;
-            GrapeCounter.Text = "" + GrapeScore;
-            PineappleScore = 0;
-            PineappleCounter.Text = "" + PineappleScore;
+            foreach (KeyValuePair<int, Label> scb in scoreBoards.ToArray())
+            {
+                scb.Value.Text = "";
+            }
 
             //Reset Bools
             lost = false;
@@ -369,11 +340,9 @@ namespace PaintRunner
                     YEnemy01 = YEnemy01 - Enemy01Speed;
                     Enemy01.Location = new Point(XEnemy01, YEnemy01);
                 }
-                if (Player.Location.X >= Enemy01.Location.X - 40 && Player.Location.X <= Enemy01.Location.X + 40 && Player.Location.Y >= Enemy01.Location.Y - 40 && Player.Location.Y <= Enemy01.Location.Y + 40)
+                if (Player.Bounds.IntersectsWith(Enemy01.Bounds))
                 {
-                    if (ShieldActive == true)
-                    { }
-                    else
+                    if (!ShieldActive)
                     {
                         lost = true;
                     }
@@ -416,11 +385,9 @@ namespace PaintRunner
                     YEnemy02Speed = YEnemy02Speed * -1;
                 }
 
-                if (Player.Location.X >= Enemy02.Location.X - 40 && Player.Location.X <= Enemy02.Location.X + 80 && Player.Location.Y >= Enemy02.Location.Y - 40 && Player.Location.Y <= Enemy02.Location.Y + 80)
+                if (Player.Bounds.IntersectsWith(Enemy02.Bounds))
                 {
-                    if (ShieldActive == true)
-                    { }
-                    else
+                    if (!ShieldActive)
                     {
                         lost = true;
                     }
