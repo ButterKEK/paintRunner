@@ -28,3 +28,12 @@ H:\Games\PaintRunner - Kopie\PaintRunner\obj\Debug\PaintRunner.csproj.GenerateRe
 H:\Games\PaintRunner - Kopie\PaintRunner\obj\Debug\PaintRunner.csproj.CoreCompileInputs.cache
 H:\Games\PaintRunner - Kopie\PaintRunner\obj\Debug\PaintRunner.exe
 H:\Games\PaintRunner - Kopie\PaintRunner\obj\Debug\PaintRunner.pdb
+C:\Users\fried\Source\Repos\paintRunner\PaintRunner\bin\Debug\PaintRunner.exe.config
+C:\Users\fried\Source\Repos\paintRunner\PaintRunner\bin\Debug\PaintRunner.exe
+C:\Users\fried\Source\Repos\paintRunner\PaintRunner\bin\Debug\PaintRunner.pdb
+C:\Users\fried\Source\Repos\paintRunner\PaintRunner\obj\Debug\PaintRunner.csprojAssemblyReference.cache
+C:\Users\fried\Source\Repos\paintRunner\PaintRunner\obj\Debug\PaintRunner.Form1.resources
+C:\Users\fried\Source\Repos\paintRunner\PaintRunner\obj\Debug\PaintRunner.Properties.Resources.resources
+C:\Users\fried\Source\Repos\paintRunner\PaintRunner\obj\Debug\PaintRunner.csproj.GenerateResource.cache
+C:\Users\fried\Source\Repos\paintRunner\PaintRunner\obj\Debug\PaintRunner.exe
+C:\Users\fried\Source\Repos\paintRunner\PaintRunner\obj\Debug\PaintRunner.pdb

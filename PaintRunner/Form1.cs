@@ -12,9 +12,6 @@ namespace PaintRunner
 {
     public partial class Form1 : Form
     {
-        //Player Location
-        int XPlayer = 947;
-        int YPlayer = 26;
 
         //Player Speed
         int PlayerSpeed = 3;
@@ -26,13 +23,6 @@ namespace PaintRunner
         int Enemy03Speed = 0;
         int Enemy04Speed = 0;
 
-        //FoodCollection Points
-        int Food01CollectionPoints = 50;
-        int Food02CollectionPoints = 50;
-        int Food03CollectionPoints = 50;
-        int Food04CollectionPoints = 50;
-        int Food05CollectionPoints = 50;
-        int Food06CollectionPoints = 50;
 
         //Food Score
         int AppleScore = 0;
@@ -43,16 +33,26 @@ namespace PaintRunner
         int PineappleScore = 0;
 
         //Powerup Radomizer
-        int Powerup01Random = 0;
-        int Powerup02Random = 0;
-        int Powerup03Random = 0;
-        int Powerup04Random = 0;
-        int Powerup05Random = 0;
-        int Powerup06Random = 0;
+        int PowerupRandom = 0;
 
         //PowerupActive
         bool SpeedBoostActive = false;
         bool ShieldActive = false;
+
+        PictureBox[] Foods;
+        String[] FoodNames = { "Apple", "Pear", "Lemon", "Cherry", "Grape", "Pineapple","Powerup" };
+        int[] StateOfFoods = new int[6];
+        Dictionary<int, int> FoodStates = new Dictionary<int, int>() {
+            {0, 50 },
+            {1, 100 },
+            {2, 150 },
+            {3, 200 },
+            {4, 250 },
+            {5,300 },
+            {6, 500 }
+        };
+        int[] scores = new int[6];
+        Dictionary<int, Label> scoreBoards = new Dictionary<int, Label>();
 
         //PowerupTimer
         int wait = 10;
@@ -106,7 +106,7 @@ namespace PaintRunner
             Enemy02Timer.Stop();
             Enemy03Timer.Stop();
             Enemy04Timer.Stop();
-        }       
+        }
 
         public Form1()
         {
@@ -119,6 +119,16 @@ namespace PaintRunner
             Powerup01Timer.Stop();
             Powerup02Timer.Stop();
 
+            Foods = new PictureBox[] { Food01, Food02, Food03, Food04, Food05, Food06 };
+            scoreBoards = new Dictionary<int, Label>()
+            {
+                { 0,AppleCounter },
+            { 1, PearCounter},
+            { 2, LemonCounter},
+            { 3, CherryCounter},
+            { 4, GrapeCounter},
+            { 5, PineappleCounter}
+            };
             //Random Food Placement
             Food01.Location = new Point(random.Next(67, 908), random.Next(67, 908));
             Food02.Location = new Point(random.Next(67, 908), random.Next(67, 908));
@@ -210,8 +220,6 @@ namespace PaintRunner
         private void ResetButton_Click(object sender, EventArgs e)
         {
             //Reset Player
-            XPlayer = 947;
-            YPlayer = 26;
             Player.Location = new Point(947, 26);
 
             //Reset Enemies
@@ -240,13 +248,7 @@ namespace PaintRunner
             Food05.Location = new Point(random.Next(67, 908), random.Next(67, 908));
             Food06.Location = new Point(random.Next(67, 908), random.Next(67, 908));
 
-            //Reset Food Points
-            Food01CollectionPoints = 50;
-            Food02CollectionPoints = 50;
-            Food03CollectionPoints = 50;
-            Food04CollectionPoints = 50;
-            Food05CollectionPoints = 50;
-            Food06CollectionPoints = 50;
+            StateOfFoods = new int[6];
 
             //Reset Food Pictures
             Image Apple = Image.FromFile("asserts\\Apple.png");
@@ -370,7 +372,7 @@ namespace PaintRunner
                 if (Player.Location.X >= Enemy01.Location.X - 40 && Player.Location.X <= Enemy01.Location.X + 40 && Player.Location.Y >= Enemy01.Location.Y - 40 && Player.Location.Y <= Enemy01.Location.Y + 40)
                 {
                     if (ShieldActive == true)
-                    {}
+                    { }
                     else
                     {
                         lost = true;
@@ -407,17 +409,17 @@ namespace PaintRunner
                         XEnemy02Speed = random.Next(2, 6);
                         XEnemy02Speed = XEnemy02Speed * -1;
                     }
-                }               
+                }
                 if (YEnemy02 > 918)
                 {
                     YEnemy02Speed = random.Next(2, 6);
                     YEnemy02Speed = YEnemy02Speed * -1;
                 }
-                
+
                 if (Player.Location.X >= Enemy02.Location.X - 40 && Player.Location.X <= Enemy02.Location.X + 80 && Player.Location.Y >= Enemy02.Location.Y - 40 && Player.Location.Y <= Enemy02.Location.Y + 80)
                 {
                     if (ShieldActive == true)
-                    {}
+                    { }
                     else
                     {
                         lost = true;
@@ -431,7 +433,7 @@ namespace PaintRunner
             //Enemy03
             if (score > 9999)
             {
-                
+
             }
         }
 
@@ -440,918 +442,104 @@ namespace PaintRunner
             //Enemy04
             if (score > 19999)
             {
-                
+
             }
         }
 
         //Collection
         private void FoodCollectionTimer_Tick(object sender, EventArgs e)
         {
-            //Food01
-            if (Player.Location.X >= Food01.Location.X - 40 && Player.Location.X <= Food01.Location.X + 40 && Player.Location.Y >= Food01.Location.Y - 40 && Player.Location.Y <= Food01.Location.Y + 40)
+            for (int i = 0; i < Foods.Length; i++)
             {
-                //Change Powerup to Apple
-                if (Food01CollectionPoints == 500)
+                if (Foods[i].Bounds.IntersectsWith(Player.Bounds))
                 {
-                    Image Apple = Image.FromFile("asserts\\Apple.png");
-                    Food01.Image = Apple;
-
-                    //SpeedBoost
-                    if (Powerup01Random == 1)
+                    //Change Powerup to Apple
+                    if (StateOfFoods[i] == 6)
                     {
-                        PlayerSpeed = PlayerSpeed + 3;
-                        SpeedBoostCounter.Visible = true;
-                        Powerup01Timer.Start();
 
-                        SpeedBoostActive = true;
-                        if (wait != 0)
+                        //SpeedBoost
+                        if (PowerupRandom == 1)
                         {
-                            wait = 10;
-                            SpeedBoostCounter.Text = wait + " sec";
+                            PlayerSpeed = PlayerSpeed + 3;
+                            SpeedBoostCounter.Visible = true;
+                            Powerup01Timer.Start();
+
+                            SpeedBoostActive = true;
+                            if (wait != 0)
+                            {
+                                wait = 10;
+                                SpeedBoostCounter.Text = wait + " sec";
+                            }
                         }
-                    }
 
-                    //Shield
-                    if (Powerup01Random == 2)
-                    {
-                        ShieldActive = true;
-
-                        //Player Image to Shielded
-                        Image PlayerShield = Image.FromFile("asserts\\Player(HappyHarry)Shielded.png");
-                        Player.Image = PlayerShield;
-
-                        ShieldCounter.Visible = true;
-                        Powerup02Timer.Start();
-
-                        if (wait2 != 0)
+                        //Shield
+                        if (PowerupRandom == 2)
                         {
-                            wait2 = 5;
-                            ShieldCounter.Text = wait2 + " sec";
+                            ShieldActive = true;
+
+                            //Player Image to Shielded
+                            Image PlayerShield = Image.FromFile("asserts\\Player(HappyHarry)Shielded.png");
+                            Player.Image = PlayerShield;
+
+                            ShieldCounter.Visible = true;
+                            Powerup02Timer.Start();
+
+                            if (wait2 != 0)
+                            {
+                                wait2 = 5;
+                                ShieldCounter.Text = wait2 + " sec";
+                            }
                         }
+                        score += FoodStates[StateOfFoods[i]];
+                        Scoreboard.Text = "Score: " + score;
+
+                        StateOfFoods[i] = 0;
+                        Image img = Image.FromFile(String.Format("asserts\\{0}.png", FoodNames[StateOfFoods[i]]));
+                        Foods[i].Image = img;
+                        return;
                     }
-                    score = score + Food01CollectionPoints;
+                    Console.WriteLine(StateOfFoods[i]);
+                    score += FoodStates[StateOfFoods[i]];
                     Scoreboard.Text = "Score: " + score;
+                    scores[StateOfFoods[i]]++;
+                    scoreBoards[StateOfFoods[i]].Text = scores[StateOfFoods[i]].ToString();
 
-                    Food01CollectionPoints = 50;
-                }
 
-                //Change Pineapple to Powerup
-                else if (Food01CollectionPoints == 300)
-                {
-                    Powerup01Random = random.Next(1, 2);
-                    if (Powerup01Random == 1)
+                    StateOfFoods[i] = (StateOfFoods[i] + 1) % FoodNames.Length;
+
+                    if (StateOfFoods[i] == 6)
                     {
-                        Image SpeedBoost = Image.FromFile("asserts\\SpeedBoost.png");
-                        Food01.Image = SpeedBoost;
+                        PowerupRandom = random.Next(1, 3);
+                        if (PowerupRandom == 1)
+                        {
+                            Image SpeedBoost = Image.FromFile("asserts\\SpeedBoost.png");
+                            Foods[i].Image = SpeedBoost;
+                        }
+                        if (PowerupRandom == 2)
+                        {
+                            Image Shield = Image.FromFile("asserts\\Shield.png");
+                            Foods[i].Image = Shield;
+                        }
+                        //Change Location
+                        Foods[i].Location = new Point(random.Next(17, 958), random.Next(17, 958));
+                        return;
                     }
-                    if (Powerup01Random == 2)
-                    {
-                        Image Shield = Image.FromFile("asserts\\Shield.png");
-                        Food01.Image = Shield;
-                    }
 
-                    PineappleScore = PineappleScore + 1;
-                    PineappleCounter.Text = "" + PineappleScore;
+                    Image FoodImage = Image.FromFile(String.Format("asserts\\{0}.png", FoodNames[StateOfFoods[i]]));
+                    Foods[i].Image = FoodImage;
 
-                    score = score + Food01CollectionPoints;
-                    Scoreboard.Text = "Score: " + score;
 
-                    Food01CollectionPoints = 500;
+
+
+                    //Change Location
+                    Foods[i].Location = new Point(random.Next(17, 958), random.Next(17, 958));
+
                 }
-
-                //Change Grape to Pineapple
-                else if (Food01CollectionPoints == 250)
-                {
-                    Image Pineapple = Image.FromFile("asserts\\Pineapple.png");
-                    Food01.Image = Pineapple;
-
-                    GrapeScore = GrapeScore + 1;
-                    GrapeCounter.Text = "" + GrapeScore;
-
-                    score = score + Food01CollectionPoints;
-                    Scoreboard.Text = "Score: " + score;
-
-                    Food01CollectionPoints = 300;
-                }
-
-                //Change Cherry to Grape
-                else if (Food01CollectionPoints == 200)
-                {
-                    Image Grape = Image.FromFile("asserts\\Grape.png");
-                    Food01.Image = Grape;
-
-                    CherryScore = CherryScore + 1;
-                    CherryCounter.Text = "" + CherryScore;
-
-                    score = score + Food01CollectionPoints;
-                    Scoreboard.Text = "Score: " + score;
-
-                    Food01CollectionPoints = 250;
-                }
-
-                //Change Lemon to Cherry
-                else if (Food01CollectionPoints == 150)
-                {
-                    Image Cherry = Image.FromFile("asserts\\Cherry.png");
-                    Food01.Image = Cherry;
-
-                    LemonScore = LemonScore + 1;
-                    LemonCounter.Text = "" + LemonScore;
-
-                    score = score + Food01CollectionPoints;
-                    Scoreboard.Text = "Score: " + score;
-
-                    Food01CollectionPoints = 200;
-                }
-
-                //Change Pear to Lemon
-                else if (Food01CollectionPoints == 100)
-                {
-                    Image Lemon = Image.FromFile("asserts\\Lemon.png");
-                    Food01.Image = Lemon;
-
-                    PearScore = PearScore + 1;
-                    PearCounter.Text = "" + PearScore;
-
-                    score = score + Food01CollectionPoints;
-                    Scoreboard.Text = "Score: " + score;
-
-                    Food01CollectionPoints = 150;
-                }
-
-                //Change Apple to Pear
-                else if (Food01CollectionPoints == 50)
-                {
-                    Image Pear = Image.FromFile("asserts\\Pear.png");
-                    Food01.Image = Pear;
-
-                    AppleScore = AppleScore + 1;
-                    AppleCounter.Text = "" + AppleScore;
-
-                    score = score + Food01CollectionPoints;
-                    Scoreboard.Text = "Score: " + score;
-
-                    Food01CollectionPoints = 100;
-                }
-
-                //Change Location
-                Food01.Location = new Point(random.Next(17, 958), random.Next(17, 958));
             }
-            //Food02
-            if (Player.Location.X >= Food02.Location.X - 40 && Player.Location.X <= Food02.Location.X + 40 && Player.Location.Y >= Food02.Location.Y - 40 && Player.Location.Y <= Food02.Location.Y + 40)
-            {
-                //Change Powerup to Apple
-                if (Food02CollectionPoints == 500)
-                {
-                    Image Apple = Image.FromFile("asserts\\Apple.png");
-                    Food02.Image = Apple;
-
-                    //SpeedBoost
-                    if (Powerup01Random == 1)
-                    {
-                        PlayerSpeed = PlayerSpeed + 3;
-                        SpeedBoostCounter.Visible = true;
-                        Powerup01Timer.Start();
-
-                        SpeedBoostActive = true;
-                        if (wait != 0)
-                        {
-                            wait = 10;
-                            SpeedBoostCounter.Text = wait + " sec";
-                        }
-                    }
-
-                    //Shield
-                    if (Powerup01Random == 2)
-                    {
-                        ShieldActive = true;
-
-                        //Player Image to Shielded
-                        Image PlayerShield = Image.FromFile("asserts\\Player(HappyHarry)Shielded.png");
-                        Player.Image = PlayerShield;
-
-                        ShieldCounter.Visible = true;
-                        Powerup02Timer.Start();
-
-                        if (wait2 != 0)
-                        {
-                            wait2 = 5;
-                            ShieldCounter.Text = wait2 + " sec";
-                        }
-                    }
-                    score = score + Food02CollectionPoints;
-                    Scoreboard.Text = "Score: " + score;
-
-                    Food02CollectionPoints = 50;
-                }
-
-                //Change Pineapple to Powerup
-                else if (Food02CollectionPoints == 300)
-                {
-                    Powerup01Random = random.Next(1, 2);
-                    if (Powerup01Random == 1)
-                    {
-                        Image SpeedBoost = Image.FromFile("asserts\\SpeedBoost.png");
-                        Food02.Image = SpeedBoost;
-                    }
-                    if (Powerup01Random == 2)
-                    {
-                        Image Shield = Image.FromFile("asserts\\Shield.png");
-                        Food02.Image = Shield;
-                    }
-
-                    PineappleScore = PineappleScore + 1;
-                    PineappleCounter.Text = "" + PineappleScore;
-
-                    score = score + Food02CollectionPoints;
-                    Scoreboard.Text = "Score: " + score;
-
-                    Food02CollectionPoints = 500;
-                }
-
-                //Change Grape to Pineapple
-                else if (Food02CollectionPoints == 250)
-                {
-                    Image Pineapple = Image.FromFile("asserts\\Pineapple.png");
-                    Food02.Image = Pineapple;
-
-                    GrapeScore = GrapeScore + 1;
-                    GrapeCounter.Text = "" + GrapeScore;
-
-                    score = score + Food02CollectionPoints;
-                    Scoreboard.Text = "Score: " + score;
-
-                    Food02CollectionPoints = 300;
-                }
-
-                //Change Cherry to Grape
-                else if (Food02CollectionPoints == 200)
-                {
-                    Image Grape = Image.FromFile("asserts\\Grape.png");
-                    Food02.Image = Grape;
-
-                    CherryScore = CherryScore + 1;
-                    CherryCounter.Text = "" + CherryScore;
-
-                    score = score + Food02CollectionPoints;
-                    Scoreboard.Text = "Score: " + score;
-
-                    Food02CollectionPoints = 250;
-                }
-
-                //Change Lemon to Cherry
-                else if (Food02CollectionPoints == 150)
-                {
-                    Image Cherry = Image.FromFile("asserts\\Cherry.png");
-                    Food02.Image = Cherry;
-
-                    LemonScore = LemonScore + 1;
-                    LemonCounter.Text = "" + LemonScore;
-
-                    score = score + Food02CollectionPoints;
-                    Scoreboard.Text = "Score: " + score;
-
-                    Food02CollectionPoints = 200;
-                }
-
-                //Change Pear to Lemon
-                else if (Food02CollectionPoints == 100)
-                {
-                    Image Lemon = Image.FromFile("asserts\\Lemon.png");
-                    Food02.Image = Lemon;
-
-                    PearScore = PearScore + 1;
-                    PearCounter.Text = "" + PearScore;
-
-                    score = score + Food02CollectionPoints;
-                    Scoreboard.Text = "Score: " + score;
-
-                    Food02CollectionPoints = 150;
-                }
-
-                //Change Apple to Pear
-                else if (Food02CollectionPoints == 50)
-                {
-                    Image Pear = Image.FromFile("asserts\\Pear.png");
-                    Food02.Image = Pear;
-
-                    AppleScore = AppleScore + 1;
-                    AppleCounter.Text = "" + AppleScore;
-
-                    score = score + Food02CollectionPoints;
-                    Scoreboard.Text = "Score: " + score;
-
-                    Food02CollectionPoints = 100;
-                }
-
-                //Change Location
-                Food02.Location = new Point(random.Next(17, 958), random.Next(17, 958));
-            }
-            //Food03
-            if (Player.Location.X >= Food03.Location.X - 40 && Player.Location.X <= Food03.Location.X + 40 && Player.Location.Y >= Food03.Location.Y - 40 && Player.Location.Y <= Food03.Location.Y + 40)
-            {
-                //Change Powerup to Apple
-                if (Food03CollectionPoints == 500)
-                {
-                    Image Apple = Image.FromFile("asserts\\Apple.png");
-                    Food03.Image = Apple;
-
-                    //SpeedBoost
-                    if (Powerup01Random == 1)
-                    {
-                        PlayerSpeed = PlayerSpeed + 3;
-                        SpeedBoostCounter.Visible = true;
-                        Powerup01Timer.Start();
-
-                        SpeedBoostActive = true;
-                        if (wait != 0)
-                        {
-                            wait = 10;
-                            SpeedBoostCounter.Text = wait + " sec";
-                        }
-                    }
-
-                    //Shield
-                    if (Powerup01Random == 2)
-                    {
-                        ShieldActive = true;
-
-                        //Player Image to Shielded
-                        Image PlayerShield = Image.FromFile("asserts\\Player(HappyHarry)Shielded.png");
-                        Player.Image = PlayerShield;
-
-                        ShieldCounter.Visible = true;
-                        Powerup02Timer.Start();
-
-                        if (wait2 != 0)
-                        {
-                            wait2 = 5;
-                            ShieldCounter.Text = wait2 + " sec";
-                        }
-                    }
-                    score = score + Food03CollectionPoints;
-                    Scoreboard.Text = "Score: " + score;
-
-                    Food03CollectionPoints = 50;
-                }
-
-                //Change Pineapple to Powerup
-                else if (Food03CollectionPoints == 300)
-                {
-                    Powerup01Random = random.Next(1, 2);
-                    if (Powerup01Random == 1)
-                    {
-                        Image SpeedBoost = Image.FromFile("asserts\\SpeedBoost.png");
-                        Food03.Image = SpeedBoost;
-                    }
-                    if (Powerup01Random == 2)
-                    {
-                        Image Shield = Image.FromFile("asserts\\Shield.png");
-                        Food03.Image = Shield;
-                    }
-
-                    PineappleScore = PineappleScore + 1;
-                    PineappleCounter.Text = "" + PineappleScore;
-
-                    score = score + Food03CollectionPoints;
-                    Scoreboard.Text = "Score: " + score;
-
-                    Food03CollectionPoints = 500;
-                }
-
-                //Change Grape to Pineapple
-                else if (Food03CollectionPoints == 250)
-                {
-                    Image Pineapple = Image.FromFile("asserts\\Pineapple.png");
-                    Food03.Image = Pineapple;
-
-                    GrapeScore = GrapeScore + 1;
-                    GrapeCounter.Text = "" + GrapeScore;
-
-                    score = score + Food03CollectionPoints;
-                    Scoreboard.Text = "Score: " + score;
-
-                    Food03CollectionPoints = 300;
-                }
-
-                //Change Cherry to Grape
-                else if (Food03CollectionPoints == 200)
-                {
-                    Image Grape = Image.FromFile("asserts\\Grape.png");
-                    Food03.Image = Grape;
-
-                    CherryScore = CherryScore + 1;
-                    CherryCounter.Text = "" + CherryScore;
-
-                    score = score + Food03CollectionPoints;
-                    Scoreboard.Text = "Score: " + score;
-
-                    Food03CollectionPoints = 250;
-                }
-
-                //Change Lemon to Cherry
-                else if (Food03CollectionPoints == 150)
-                {
-                    Image Cherry = Image.FromFile("asserts\\Cherry.png");
-                    Food03.Image = Cherry;
-
-                    LemonScore = LemonScore + 1;
-                    LemonCounter.Text = "" + LemonScore;
-
-                    score = score + Food03CollectionPoints;
-                    Scoreboard.Text = "Score: " + score;
-
-                    Food03CollectionPoints = 200;
-                }
-
-                //Change Pear to Lemon
-                else if (Food03CollectionPoints == 100)
-                {
-                    Image Lemon = Image.FromFile("asserts\\Lemon.png");
-                    Food03.Image = Lemon;
-
-                    PearScore = PearScore + 1;
-                    PearCounter.Text = "" + PearScore;
-
-                    score = score + Food03CollectionPoints;
-                    Scoreboard.Text = "Score: " + score;
-
-                    Food03CollectionPoints = 150;
-                }
-
-                //Change Apple to Pear
-                else if (Food03CollectionPoints == 50)
-                {
-                    Image Pear = Image.FromFile("asserts\\Pear.png");
-                    Food03.Image = Pear;
-
-                    AppleScore = AppleScore + 1;
-                    AppleCounter.Text = "" + AppleScore;
-
-                    score = score + Food03CollectionPoints;
-                    Scoreboard.Text = "Score: " + score;
-
-                    Food03CollectionPoints = 100;
-                }
-
-                //Change Location
-                Food03.Location = new Point(random.Next(17, 958), random.Next(17, 958));
-            }
-            //Food04
-            if (Player.Location.X >= Food04.Location.X - 40 && Player.Location.X <= Food04.Location.X + 40 && Player.Location.Y >= Food04.Location.Y - 40 && Player.Location.Y <= Food04.Location.Y + 40)
-            {
-                //Change Powerup to Apple
-                if (Food03CollectionPoints == 500)
-                {
-                    Image Apple = Image.FromFile("asserts\\Apple.png");
-                    Food03.Image = Apple;
-
-                    //SpeedBoost
-                    if (Powerup01Random == 1)
-                    {
-                        PlayerSpeed = PlayerSpeed + 3;
-                        SpeedBoostCounter.Visible = true;
-                        Powerup01Timer.Start();
-
-                        SpeedBoostActive = true;
-                        if (wait != 0)
-                        {
-                            wait = 10;
-                            SpeedBoostCounter.Text = wait + " sec";
-                        }
-                    }
-
-                    //Shield
-                    if (Powerup01Random == 2)
-                    {
-                        ShieldActive = true;
-
-                        //Player Image to Shielded
-                        Image PlayerShield = Image.FromFile("asserts\\Player(HappyHarry)Shielded.png");
-                        Player.Image = PlayerShield;
-
-                        ShieldCounter.Visible = true;
-                        Powerup02Timer.Start();
-
-                        if (wait2 != 0)
-                        {
-                            wait2 = 5;
-                            ShieldCounter.Text = wait2 + " sec";
-                        }
-                    }
-                    score = score + Food04CollectionPoints;
-                    Scoreboard.Text = "Score: " + score;
-
-                    Food04CollectionPoints = 50;
-                }
-
-                //Change Pineapple to Powerup
-                else if (Food04CollectionPoints == 300)
-                {
-                    Powerup01Random = random.Next(1, 2);
-                    if (Powerup01Random == 1)
-                    {
-                        Image SpeedBoost = Image.FromFile("asserts\\SpeedBoost.png");
-                        Food04.Image = SpeedBoost;
-                    }
-                    if (Powerup01Random == 2)
-                    {
-                        Image Shield = Image.FromFile("asserts\\Shield.png");
-                        Food04.Image = Shield;
-                    }
-
-                    PineappleScore = PineappleScore + 1;
-                    PineappleCounter.Text = "" + PineappleScore;
-
-                    score = score + Food04CollectionPoints;
-                    Scoreboard.Text = "Score: " + score;
-
-                    Food04CollectionPoints = 500;
-                }
-
-                //Change Grape to Pineapple
-                else if (Food04CollectionPoints == 250)
-                {
-                    Image Pineapple = Image.FromFile("asserts\\Pineapple.png");
-                    Food04.Image = Pineapple;
-
-                    GrapeScore = GrapeScore + 1;
-                    GrapeCounter.Text = "" + GrapeScore;
-
-                    score = score + Food04CollectionPoints;
-                    Scoreboard.Text = "Score: " + score;
-
-                    Food04CollectionPoints = 300;
-                }
-
-                //Change Cherry to Grape
-                else if (Food04CollectionPoints == 200)
-                {
-                    Image Grape = Image.FromFile("asserts\\Grape.png");
-                    Food04.Image = Grape;
-
-                    CherryScore = CherryScore + 1;
-                    CherryCounter.Text = "" + CherryScore;
-
-                    score = score + Food04CollectionPoints;
-                    Scoreboard.Text = "Score: " + score;
-
-                    Food04CollectionPoints = 250;
-                }
-
-                //Change Lemon to Cherry
-                else if (Food04CollectionPoints == 150)
-                {
-                    Image Cherry = Image.FromFile("asserts\\Cherry.png");
-                    Food04.Image = Cherry;
-
-                    LemonScore = LemonScore + 1;
-                    LemonCounter.Text = "" + LemonScore;
-
-                    score = score + Food04CollectionPoints;
-                    Scoreboard.Text = "Score: " + score;
-
-                    Food04CollectionPoints = 200;
-                }
-
-                //Change Pear to Lemon
-                else if (Food04CollectionPoints == 100)
-                {
-                    Image Lemon = Image.FromFile("asserts\\Lemon.png");
-                    Food04.Image = Lemon;
-
-                    PearScore = PearScore + 1;
-                    PearCounter.Text = "" + PearScore;
-
-                    score = score + Food04CollectionPoints;
-                    Scoreboard.Text = "Score: " + score;
-
-                    Food04CollectionPoints = 150;
-                }
-
-                //Change Apple to Pear
-                else if (Food04CollectionPoints == 50)
-                {
-                    Image Pear = Image.FromFile("asserts\\Pear.png");
-                    Food04.Image = Pear;
-
-                    AppleScore = AppleScore + 1;
-                    AppleCounter.Text = "" + AppleScore;
-
-                    score = score + Food04CollectionPoints;
-                    Scoreboard.Text = "Score: " + score;
-
-                    Food04CollectionPoints = 100;
-                }
-
-                //Change Location
-                Food04.Location = new Point(random.Next(17, 958), random.Next(17, 958));
-            }
-            //Food05
-            if (Player.Location.X >= Food05.Location.X - 40 && Player.Location.X <= Food05.Location.X + 40 && Player.Location.Y >= Food05.Location.Y - 40 && Player.Location.Y <= Food05.Location.Y + 40)
-            {
-                //Change Powerup to Apple
-                if (Food04CollectionPoints == 500)
-                {
-                    Image Apple = Image.FromFile("asserts\\Apple.png");
-                    Food04.Image = Apple;
-
-                    //SpeedBoost
-                    if (Powerup01Random == 1)
-                    {
-                        PlayerSpeed = PlayerSpeed + 3;
-                        SpeedBoostCounter.Visible = true;
-                        Powerup01Timer.Start();
-
-                        SpeedBoostActive = true;
-                        if (wait != 0)
-                        {
-                            wait = 10;
-                            SpeedBoostCounter.Text = wait + " sec";
-                        }
-                    }
-
-                    //Shield
-                    if (Powerup01Random == 2)
-                    {
-                        ShieldActive = true;
-
-                        //Player Image to Shielded
-                        Image PlayerShield = Image.FromFile("asserts\\Player(HappyHarry)Shielded.png");
-                        Player.Image = PlayerShield;
-
-                        ShieldCounter.Visible = true;
-                        Powerup02Timer.Start();
-
-                        if (wait2 != 0)
-                        {
-                            wait2 = 5;
-                            ShieldCounter.Text = wait2 + " sec";
-                        }
-                    }
-                    score = score + Food05CollectionPoints;
-                    Scoreboard.Text = "Score: " + score;
-
-                    Food05CollectionPoints = 50;
-                }
-
-                //Change Pineapple to Powerup
-                else if (Food05CollectionPoints == 300)
-                {
-                    Powerup01Random = random.Next(1, 2);
-                    if (Powerup01Random == 1)
-                    {
-                        Image SpeedBoost = Image.FromFile("asserts\\SpeedBoost.png");
-                        Food05.Image = SpeedBoost;
-                    }
-                    if (Powerup01Random == 2)
-                    {
-                        Image Shield = Image.FromFile("asserts\\Shield.png");
-                        Food05.Image = Shield;
-                    }
-
-                    PineappleScore = PineappleScore + 1;
-                    PineappleCounter.Text = "" + PineappleScore;
-
-                    score = score + Food05CollectionPoints;
-                    Scoreboard.Text = "Score: " + score;
-
-                    Food05CollectionPoints = 500;
-                }
-
-                //Change Grape to Pineapple
-                else if (Food05CollectionPoints == 250)
-                {
-                    Image Pineapple = Image.FromFile("asserts\\Pineapple.png");
-                    Food05.Image = Pineapple;
-
-                    GrapeScore = GrapeScore + 1;
-                    GrapeCounter.Text = "" + GrapeScore;
-
-                    score = score + Food05CollectionPoints;
-                    Scoreboard.Text = "Score: " + score;
-
-                    Food05CollectionPoints = 300;
-                }
-
-                //Change Cherry to Grape
-                else if (Food05CollectionPoints == 200)
-                {
-                    Image Grape = Image.FromFile("asserts\\Grape.png");
-                    Food05.Image = Grape;
-
-                    CherryScore = CherryScore + 1;
-                    CherryCounter.Text = "" + CherryScore;
-
-                    score = score + Food05CollectionPoints;
-                    Scoreboard.Text = "Score: " + score;
-
-                    Food05CollectionPoints = 250;
-                }
-
-                //Change Lemon to Cherry
-                else if (Food05CollectionPoints == 150)
-                {
-                    Image Cherry = Image.FromFile("asserts\\Cherry.png");
-                    Food05.Image = Cherry;
-
-                    LemonScore = LemonScore + 1;
-                    LemonCounter.Text = "" + LemonScore;
-
-                    score = score + Food05CollectionPoints;
-                    Scoreboard.Text = "Score: " + score;
-
-                    Food05CollectionPoints = 200;
-                }
-
-                //Change Pear to Lemon
-                else if (Food05CollectionPoints == 100)
-                {
-                    Image Lemon = Image.FromFile("asserts\\Lemon.png");
-                    Food05.Image = Lemon;
-
-                    PearScore = PearScore + 1;
-                    PearCounter.Text = "" + PearScore;
-
-                    score = score + Food05CollectionPoints;
-                    Scoreboard.Text = "Score: " + score;
-
-                    Food05CollectionPoints = 150;
-                }
-
-                //Change Apple to Pear
-                else if (Food05CollectionPoints == 50)
-                {
-                    Image Pear = Image.FromFile("asserts\\Pear.png");
-                    Food05.Image = Pear;
-
-                    AppleScore = AppleScore + 1;
-                    AppleCounter.Text = "" + AppleScore;
-
-                    score = score + Food05CollectionPoints;
-                    Scoreboard.Text = "Score: " + score;
-
-                    Food05CollectionPoints = 100;
-                }
-
-                //Change Location
-                Food05.Location = new Point(random.Next(17, 958), random.Next(17, 958));
-            }
-            //Food06
-            if (Player.Location.X >= Food06.Location.X - 40 && Player.Location.X <= Food06.Location.X + 40 && Player.Location.Y >= Food06.Location.Y - 40 && Player.Location.Y <= Food06.Location.Y + 40)
-            {
-                //Change Powerup to Apple
-                if (Food05CollectionPoints == 500)
-                {
-                    Image Apple = Image.FromFile("asserts\\Apple.png");
-                    Food05.Image = Apple;
-
-                    //SpeedBoost
-                    if (Powerup01Random == 1)
-                    {
-                        PlayerSpeed = PlayerSpeed + 3;
-                        SpeedBoostCounter.Visible = true;
-                        Powerup01Timer.Start();
-
-                        SpeedBoostActive = true;
-                        if (wait != 0)
-                        {
-                            wait = 10;
-                            SpeedBoostCounter.Text = wait + " sec";
-                        }
-                    }
-
-                    //Shield
-                    if (Powerup01Random == 2)
-                    {
-                        ShieldActive = true;
-
-                        //Player Image to Shielded
-                        Image PlayerShield = Image.FromFile("asserts\\Player(HappyHarry)Shielded.png");
-                        Player.Image = PlayerShield;
-
-                        ShieldCounter.Visible = true;
-                        Powerup02Timer.Start();
-
-                        if (wait2 != 0)
-                        {
-                            wait2 = 5;
-                            ShieldCounter.Text = wait2 + " sec";
-                        }
-                    }
-                    score = score + Food06CollectionPoints;
-                    Scoreboard.Text = "Score: " + score;
-
-                    Food06CollectionPoints = 50;
-                }
-
-                //Change Pineapple to Powerup
-                else if (Food06CollectionPoints == 300)
-                {
-                    Powerup01Random = random.Next(1, 2);
-                    if (Powerup01Random == 1)
-                    {
-                        Image SpeedBoost = Image.FromFile("asserts\\SpeedBoost.png");
-                        Food06.Image = SpeedBoost;
-                    }
-                    if (Powerup01Random == 2)
-                    {
-                        Image Shield = Image.FromFile("asserts\\Shield.png");
-                        Food06.Image = Shield;
-                    }
-
-                    PineappleScore = PineappleScore + 1;
-                    PineappleCounter.Text = "" + PineappleScore;
-
-                    score = score + Food06CollectionPoints;
-                    Scoreboard.Text = "Score: " + score;
-
-                    Food06CollectionPoints = 500;
-                }
-
-                //Change Grape to Pineapple
-                else if (Food06CollectionPoints == 250)
-                {
-                    Image Pineapple = Image.FromFile("asserts\\Pineapple.png");
-                    Food06.Image = Pineapple;
-
-                    GrapeScore = GrapeScore + 1;
-                    GrapeCounter.Text = "" + GrapeScore;
-
-                    score = score + Food06CollectionPoints;
-                    Scoreboard.Text = "Score: " + score;
-
-                    Food06CollectionPoints = 300;
-                }
-
-                //Change Cherry to Grape
-                else if (Food06CollectionPoints == 200)
-                {
-                    Image Grape = Image.FromFile("asserts\\Grape.png");
-                    Food06.Image = Grape;
-
-                    CherryScore = CherryScore + 1;
-                    CherryCounter.Text = "" + CherryScore;
-
-                    score = score + Food06CollectionPoints;
-                    Scoreboard.Text = "Score: " + score;
-
-                    Food06CollectionPoints = 250;
-                }
-
-                //Change Lemon to Cherry
-                else if (Food06CollectionPoints == 150)
-                {
-                    Image Cherry = Image.FromFile("asserts\\Cherry.png");
-                    Food06.Image = Cherry;
-
-                    LemonScore = LemonScore + 1;
-                    LemonCounter.Text = "" + LemonScore;
-
-                    score = score + Food06CollectionPoints;
-                    Scoreboard.Text = "Score: " + score;
-
-                    Food06CollectionPoints = 200;
-                }
-
-                //Change Pear to Lemon
-                else if (Food06CollectionPoints == 100)
-                {
-                    Image Lemon = Image.FromFile("asserts\\Lemon.png");
-                    Food06.Image = Lemon;
-
-                    PearScore = PearScore + 1;
-                    PearCounter.Text = "" + PearScore;
-
-                    score = score + Food06CollectionPoints;
-                    Scoreboard.Text = "Score: " + score;
-
-                    Food06CollectionPoints = 150;
-                }
-
-                //Change Apple to Pear
-                else if (Food06CollectionPoints == 50)
-                {
-                    Image Pear = Image.FromFile("asserts\\Pear.png");
-                    Food06.Image = Pear;
-
-                    AppleScore = AppleScore + 1;
-                    AppleCounter.Text = "" + AppleScore;
-
-                    score = score + Food06CollectionPoints;
-                    Scoreboard.Text = "Score: " + score;
-
-                    Food06CollectionPoints = 100;
-                }
-
-                //Change Location
-                Food06.Location = new Point(random.Next(17, 958), random.Next(17, 958));
-            }            
         }
-
         private void LostCheckTimer_Tick(object sender, EventArgs e)
         {
-            if(lost == true)
+            if (lost == true)
             {
                 //Stopping all Timers
                 MoveTimersStop();
