@@ -1600,9 +1600,6 @@
         8b5yC0IwLAWrvIK5KfOCxjwB/wsrlzIckuUAAAAASUVORK5CYII=
 </value>
   </data>
-  <metadata name="LostCheckTimer.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>865, 34</value>
-  </metadata>
   <metadata name="Powerup01Timer.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>1009, 23</value>
   </metadata>

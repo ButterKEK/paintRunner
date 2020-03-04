@@ -37,3 +37,13 @@ C:\Users\fried\Source\Repos\paintRunner\PaintRunner\obj\Debug\PaintRunner.Proper
 C:\Users\fried\Source\Repos\paintRunner\PaintRunner\obj\Debug\PaintRunner.csproj.GenerateResource.cache
 C:\Users\fried\Source\Repos\paintRunner\PaintRunner\obj\Debug\PaintRunner.exe
 C:\Users\fried\Source\Repos\paintRunner\PaintRunner\obj\Debug\PaintRunner.pdb
+H:\Scripting\paintRunner\PaintRunner\bin\Debug\PaintRunner.exe.config
+H:\Scripting\paintRunner\PaintRunner\bin\Debug\PaintRunner.exe
+H:\Scripting\paintRunner\PaintRunner\bin\Debug\PaintRunner.pdb
+H:\Scripting\paintRunner\PaintRunner\obj\Debug\PaintRunner.csprojAssemblyReference.cache
+H:\Scripting\paintRunner\PaintRunner\obj\Debug\PaintRunner.Form1.resources
+H:\Scripting\paintRunner\PaintRunner\obj\Debug\PaintRunner.Properties.Resources.resources
+H:\Scripting\paintRunner\PaintRunner\obj\Debug\PaintRunner.csproj.GenerateResource.cache
+H:\Scripting\paintRunner\PaintRunner\obj\Debug\PaintRunner.csproj.CoreCompileInputs.cache
+H:\Scripting\paintRunner\PaintRunner\obj\Debug\PaintRunner.exe
+H:\Scripting\paintRunner\PaintRunner\obj\Debug\PaintRunner.pdb

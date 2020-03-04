@@ -103,7 +103,6 @@
             this.FoodCollectionTimer = new System.Windows.Forms.Timer(this.components);
             this.Enemy04 = new System.Windows.Forms.PictureBox();
             this.Enemy03 = new System.Windows.Forms.PictureBox();
-            this.LostCheckTimer = new System.Windows.Forms.Timer(this.components);
             this.LostScreen = new System.Windows.Forms.Label();
             this.PauseScreen = new System.Windows.Forms.Label();
             this.Powerup01Timer = new System.Windows.Forms.Timer(this.components);
@@ -889,11 +888,6 @@
             this.Enemy03.TabIndex = 123;
             this.Enemy03.TabStop = false;
             // 
-            // LostCheckTimer
-            // 
-            this.LostCheckTimer.Enabled = true;
-            this.LostCheckTimer.Tick += new System.EventHandler(this.LostCheckTimer_Tick);
-            // 
             // LostScreen
             // 
             this.LostScreen.AutoSize = true;
@@ -1153,7 +1147,6 @@
         private System.Windows.Forms.Timer FoodCollectionTimer;
         private System.Windows.Forms.PictureBox Enemy04;
         private System.Windows.Forms.PictureBox Enemy03;
-        private System.Windows.Forms.Timer LostCheckTimer;
         private System.Windows.Forms.Label LostScreen;
         private System.Windows.Forms.Label PauseScreen;
         private System.Windows.Forms.Timer Powerup01Timer;

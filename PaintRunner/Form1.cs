@@ -17,7 +17,7 @@ namespace PaintRunner
         int PlayerSpeed = 3;
 
         //EnemySpeed
-        int Enemy01Speed = 1;
+        int Enemy01Speed = 2;
         int XEnemy02Speed = -3;
         int YEnemy02Speed = -3;
         int Enemy03Speed = 0;
@@ -28,7 +28,6 @@ namespace PaintRunner
         int PowerupRandom = 0;
 
         //PowerupActive
-        bool SpeedBoostActive = false;
         bool ShieldActive = false;
 
         PictureBox[] Foods;
@@ -114,7 +113,7 @@ namespace PaintRunner
             Foods = new PictureBox[] { Food01, Food02, Food03, Food04, Food05, Food06 };
             scoreBoards = new Dictionary<int, Label>()
             {
-                { 0,AppleCounter },
+                { 0, AppleCounter},
                 { 1, PearCounter},
                 { 2, LemonCounter},
                 { 3, CherryCounter},
@@ -122,12 +121,10 @@ namespace PaintRunner
                 { 5, PineappleCounter}
             };
             //Random Food Placement
-            Food01.Location = new Point(random.Next(67, 908), random.Next(67, 908));
-            Food02.Location = new Point(random.Next(67, 908), random.Next(67, 908));
-            Food03.Location = new Point(random.Next(67, 908), random.Next(67, 908));
-            Food04.Location = new Point(random.Next(67, 908), random.Next(67, 908));
-            Food05.Location = new Point(random.Next(67, 908), random.Next(67, 908));
-            Food06.Location = new Point(random.Next(67, 908), random.Next(67, 908));
+            foreach  (PictureBox item in Foods)
+            {
+                item.Location = new Point(random.Next(67, 908), random.Next(67, 908));
+            }
         }
 
         //Moving Up
@@ -270,7 +267,6 @@ namespace PaintRunner
             EnemyTimersStart();
 
             FoodCollectionTimer.Start();
-            LostCheckTimer.Start();
         }
 
         //Pausing the Game
@@ -320,31 +316,18 @@ namespace PaintRunner
             //Enemy01
             if (score > 999)
             {
-                if (Player.Location.X + 20 >= Enemy01.Location.X + 20)
-                {
-                    XEnemy01 = XEnemy01 + Enemy01Speed;
-                    Enemy01.Location = new Point(XEnemy01, YEnemy01);
-                }
-                if (Player.Location.X + 20 <= Enemy01.Location.X + 20)
-                {
-                    XEnemy01 = XEnemy01 - Enemy01Speed;
-                    Enemy01.Location = new Point(XEnemy01, YEnemy01);
-                }
-                if (Player.Location.Y + 20 >= Enemy01.Location.Y + 20)
-                {
-                    YEnemy01 = YEnemy01 + Enemy01Speed;
-                    Enemy01.Location = new Point(XEnemy01, YEnemy01);
-                }
-                if (Player.Location.Y + 20 <= Enemy01.Location.Y + 20)
-                {
-                    YEnemy01 = YEnemy01 - Enemy01Speed;
-                    Enemy01.Location = new Point(XEnemy01, YEnemy01);
-                }
+                //Calculates a vector direction between the enemy and the Player and moves Enemy in that direction
+                PointF direction = new PointF(Player.Location.X -Enemy01.Location.X, Player.Location.Y - Enemy01.Location.Y);
+                float len = (float)Math.Sqrt(direction.X *direction.X + direction.Y *direction.Y);
+                direction.X = (direction.X / len *Enemy01Speed);
+                direction.Y = (direction.Y / len *Enemy01Speed);
+                Console.WriteLine(direction.ToString());
+                Enemy01.Location = new Point(Enemy01.Location.X + (int)direction.X,Enemy01.Location.Y +(int)direction.Y);
                 if (Player.Bounds.IntersectsWith(Enemy01.Bounds))
                 {
                     if (!ShieldActive)
                     {
-                        lost = true;
+                        Lost();
                     }
                 }
             }
@@ -371,9 +354,7 @@ namespace PaintRunner
                 }
                 if (XEnemy02 > 918)
                 {
-                    if (Enemy02First == false)
-                    { }
-                    if (Enemy02First == true)
+                    if (Enemy02First)
                     {
                         XEnemy02Speed = random.Next(2, 6);
                         XEnemy02Speed = XEnemy02Speed * -1;
@@ -389,7 +370,7 @@ namespace PaintRunner
                 {
                     if (!ShieldActive)
                     {
-                        lost = true;
+                        Lost();
                     }
                 }
             }
@@ -431,7 +412,6 @@ namespace PaintRunner
                             SpeedBoostCounter.Visible = true;
                             Powerup01Timer.Start();
 
-                            SpeedBoostActive = true;
                             if (wait != 0)
                             {
                                 wait = 10;
@@ -504,7 +484,7 @@ namespace PaintRunner
                 }
             }
         }
-        private void LostCheckTimer_Tick(object sender, EventArgs e)
+        private void Lost()
         {
             if (lost == true)
             {
