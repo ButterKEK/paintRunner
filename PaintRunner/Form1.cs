@@ -17,9 +17,8 @@ namespace PaintRunner
         int PlayerSpeed = 3;
 
         //EnemySpeed
-        int Enemy01Speed = 2;
-        int XEnemy02Speed = -3;
-        int YEnemy02Speed = -3;
+        const int Enemy01Speed = 2;
+        Point Enemy02Delta = new Point(-3,-3);
         int Enemy03Speed = 0;
         int Enemy04Speed = 0;
 
@@ -50,8 +49,8 @@ namespace PaintRunner
         int wait2 = 5;
 
         //Enemy Location
-        int XEnemy01 = 1070;
-        int YEnemy01 = 793;
+        Point Enemy01Start = new Point(1070,793);
+        
         int XEnemy02 = 1050;
         int YEnemy02 = 894;
         bool Enemy02First = false;
@@ -169,19 +168,22 @@ namespace PaintRunner
             if (!lost && !pause)
             {
 
-                MoveTimersStop();
                 switch (e.KeyCode)
                 {
                     case (Keys.W):
+                        MoveTimersStop();
                         MoveUpTimer.Start();
                         break;
                     case (Keys.A):
+                        MoveTimersStop();
                         MoveLeftTimer.Start();
                         break;
                     case (Keys.S):
+                        MoveTimersStop();
                         MoveDownTimer.Start();
                         break;
                     case (Keys.D):
+                        MoveTimersStop();
                         MoveRightTimer.Start();
                         break;
                 }
@@ -199,9 +201,7 @@ namespace PaintRunner
             scores = new int[6];
 
             //Reset Enemies
-            XEnemy01 = 1070;
-            YEnemy01 = 793;
-            Enemy01.Location = new Point(1070, 793);
+            Enemy01.Location = Enemy01Start;
 
             XEnemy02 = 1050;
             YEnemy02 = 894;
@@ -217,23 +217,19 @@ namespace PaintRunner
             Enemy04.Location = new Point(1340, 884);
 
             //Reset Food Location
-            Food01.Location = new Point(random.Next(67, 908), random.Next(67, 908));
-            Food02.Location = new Point(random.Next(67, 908), random.Next(67, 908));
-            Food03.Location = new Point(random.Next(67, 908), random.Next(67, 908));
-            Food04.Location = new Point(random.Next(67, 908), random.Next(67, 908));
-            Food05.Location = new Point(random.Next(67, 908), random.Next(67, 908));
-            Food06.Location = new Point(random.Next(67, 908), random.Next(67, 908));
+            foreach (PictureBox item in Foods)
+            {
+                item.Location = new Point(random.Next(67, 908), random.Next(67, 908));
+            }
 
             StateOfFoods = new int[6];
 
             //Reset Food Pictures
             Image Apple = Image.FromFile("asserts\\Apple.png");
-            Food01.Image = Apple;
-            Food02.Image = Apple;
-            Food03.Image = Apple;
-            Food04.Image = Apple;
-            Food05.Image = Apple;
-            Food06.Image = Apple;
+            foreach (PictureBox item in Foods)
+            {
+                item.Image = Apple;
+            }
 
             //Reset Score
             score = 0;
@@ -255,9 +251,7 @@ namespace PaintRunner
             //Reset Speed
             PlayerSpeed = 3;
 
-            Enemy01Speed = 1;
-            XEnemy02Speed = -3;
-            YEnemy02Speed = -3;
+            Enemy02Delta = new Point(-3, -3);
             Enemy03Speed = 0;
             Enemy04Speed = 0;
 
@@ -338,32 +332,24 @@ namespace PaintRunner
             //Enemy02
             if (score > 4999)
             {
-                XEnemy02 = XEnemy02 + XEnemy02Speed;
-                YEnemy02 = YEnemy02 + YEnemy02Speed;
 
-                Enemy02.Location = new Point(XEnemy02, YEnemy02);
+                Enemy02.Location += (Size)Enemy02Delta;
 
-                if (XEnemy02 < 17)
+                if (Enemy02.Location.X < 17)
                 {
-                    XEnemy02Speed = random.Next(2, 6);
-                    Enemy02First = true;
+                    Enemy02Delta.X = random.Next(2, 6);
                 }
-                if (YEnemy02 < 17)
+                if (Enemy02.Location.Y < 17)
                 {
-                    YEnemy02Speed = random.Next(2, 6);
+                    Enemy02Delta.Y = random.Next(2, 6);
                 }
-                if (XEnemy02 > 918)
+                if (Enemy02.Location.X > 918)
                 {
-                    if (Enemy02First)
-                    {
-                        XEnemy02Speed = random.Next(2, 6);
-                        XEnemy02Speed = XEnemy02Speed * -1;
-                    }
+                    Enemy02Delta.X = random.Next(-6, -2);
                 }
-                if (YEnemy02 > 918)
+                if (Enemy02.Location.Y > 918)
                 {
-                    YEnemy02Speed = random.Next(2, 6);
-                    YEnemy02Speed = YEnemy02Speed * -1;
+                    Enemy02Delta.Y = random.Next(-6, -2);
                 }
 
                 if (Player.Bounds.IntersectsWith(Enemy02.Bounds))
@@ -486,8 +472,7 @@ namespace PaintRunner
         }
         private void Lost()
         {
-            if (lost == true)
-            {
+
                 //Stopping all Timers
                 MoveTimersStop();
 
@@ -497,7 +482,7 @@ namespace PaintRunner
 
                 //LostScreen
                 LostScreen.Visible = true;
-            }
+            
         }
 
         //SpeedBoostTimer
