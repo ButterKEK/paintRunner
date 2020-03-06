@@ -49,7 +49,6 @@
             this.SpeedBoostPicBorder = new System.Windows.Forms.PictureBox();
             this.Enemy04Name = new System.Windows.Forms.Label();
             this.Enemy03Name = new System.Windows.Forms.Label();
-            this.MoveUpTimer = new System.Windows.Forms.Timer(this.components);
             this.Enemy02Name = new System.Windows.Forms.Label();
             this.Enemy01Name = new System.Windows.Forms.Label();
             this.Enemy02 = new System.Windows.Forms.PictureBox();
@@ -93,9 +92,7 @@
             this.InfoBackground = new System.Windows.Forms.PictureBox();
             this.SpeedBoostPoints = new System.Windows.Forms.Label();
             this.ShieldPoints = new System.Windows.Forms.Label();
-            this.MoveDownTimer = new System.Windows.Forms.Timer(this.components);
-            this.MoveLeftTimer = new System.Windows.Forms.Timer(this.components);
-            this.MoveRightTimer = new System.Windows.Forms.Timer(this.components);
+            this.MoveTimer = new System.Windows.Forms.Timer(this.components);
             this.Enemy01Timer = new System.Windows.Forms.Timer(this.components);
             this.Enemy02Timer = new System.Windows.Forms.Timer(this.components);
             this.Enemy03Timer = new System.Windows.Forms.Timer(this.components);
@@ -365,12 +362,6 @@
             this.Enemy03Name.Size = new System.Drawing.Size(61, 25);
             this.Enemy03Name.TabIndex = 101;
             this.Enemy03Name.Text = "name";
-            // 
-            // MoveUpTimer
-            // 
-            this.MoveUpTimer.Enabled = true;
-            this.MoveUpTimer.Interval = 5;
-            this.MoveUpTimer.Tick += new System.EventHandler(this.MoveUpTimer_Tick);
             // 
             // Enemy02Name
             // 
@@ -821,23 +812,11 @@
             this.ShieldPoints.TabIndex = 121;
             this.ShieldPoints.Text = "Shield(500)";
             // 
-            // MoveDownTimer
+            // MoveTimer
             // 
-            this.MoveDownTimer.Enabled = true;
-            this.MoveDownTimer.Interval = 5;
-            this.MoveDownTimer.Tick += new System.EventHandler(this.MoveDownTimer_Tick);
-            // 
-            // MoveLeftTimer
-            // 
-            this.MoveLeftTimer.Enabled = true;
-            this.MoveLeftTimer.Interval = 5;
-            this.MoveLeftTimer.Tick += new System.EventHandler(this.MoveLeftTimer_Tick);
-            // 
-            // MoveRightTimer
-            // 
-            this.MoveRightTimer.Enabled = true;
-            this.MoveRightTimer.Interval = 5;
-            this.MoveRightTimer.Tick += new System.EventHandler(this.MoveRightTimer_Tick);
+            this.MoveTimer.Enabled = true;
+            this.MoveTimer.Interval = 5;
+            this.MoveTimer.Tick += new System.EventHandler(this.MoveTimer_Tick);
             // 
             // Enemy01Timer
             // 
@@ -1093,7 +1072,6 @@
         private System.Windows.Forms.PictureBox SpeedBoostPicBorder;
         private System.Windows.Forms.Label Enemy04Name;
         private System.Windows.Forms.Label Enemy03Name;
-        private System.Windows.Forms.Timer MoveUpTimer;
         private System.Windows.Forms.Label Enemy02Name;
         private System.Windows.Forms.Label Enemy01Name;
         private System.Windows.Forms.PictureBox Enemy02;
@@ -1137,9 +1115,7 @@
         private System.Windows.Forms.PictureBox InfoBackground;
         private System.Windows.Forms.Label SpeedBoostPoints;
         private System.Windows.Forms.Label ShieldPoints;
-        private System.Windows.Forms.Timer MoveDownTimer;
-        private System.Windows.Forms.Timer MoveLeftTimer;
-        private System.Windows.Forms.Timer MoveRightTimer;
+        private System.Windows.Forms.Timer MoveTimer;
         private System.Windows.Forms.Timer Enemy01Timer;
         private System.Windows.Forms.Timer Enemy02Timer;
         private System.Windows.Forms.Timer Enemy03Timer;

@@ -15,10 +15,11 @@ namespace PaintRunner
 
         //Player Speed
         int PlayerSpeed = 3;
+        Point PlayerDelta = new Point(0, 0);
 
         //EnemySpeed
         const int Enemy01Speed = 2;
-        Point Enemy02Delta = new Point(-3,-3);
+        Point Enemy02Delta = new Point(-3, -3);
         int Enemy03Speed = 0;
         int Enemy04Speed = 0;
 
@@ -49,11 +50,9 @@ namespace PaintRunner
         int wait2 = 5;
 
         //Enemy Location
-        Point Enemy01Start = new Point(1070,793);
-        
-        int XEnemy02 = 1050;
-        int YEnemy02 = 894;
-        bool Enemy02First = false;
+        Point Enemy01Start = new Point(1070, 793);
+        Point Enemy02Start = new Point(1050, 894);
+
         int XEnemy03 = 1340;
         int YEnemy03 = 763;
         int XEnemy04 = 1340;
@@ -71,14 +70,6 @@ namespace PaintRunner
         //Random Generator
         Random random = new Random();
 
-        //Stopping Movement Timers
-        private void MoveTimersStop()
-        {
-            MoveUpTimer.Stop();
-            MoveDownTimer.Stop();
-            MoveLeftTimer.Stop();
-            MoveRightTimer.Stop();
-        }
 
         //Starting Enemy Timers
         private void EnemyTimersStart()
@@ -102,8 +93,7 @@ namespace PaintRunner
         {
             InitializeComponent();
 
-            //Stop Movement Timers
-            MoveTimersStop();
+            MoveTimer.Start();
 
             //Stop Powerup Timers
             Powerup01Timer.Stop();
@@ -120,46 +110,28 @@ namespace PaintRunner
                 { 5, PineappleCounter}
             };
             //Random Food Placement
-            foreach  (PictureBox item in Foods)
+            foreach (PictureBox item in Foods)
             {
                 item.Location = new Point(random.Next(67, 908), random.Next(67, 908));
             }
         }
 
-        //Moving Up
-        private void MoveUpTimer_Tick(object sender, EventArgs e)
-        {
-            if (Player.Top > 17)
-            {
-                Player.Top -= PlayerSpeed;
-            }
-        }
 
-        //Moving Down
-        private void MoveDownTimer_Tick(object sender, EventArgs e)
+        //Moving
+        private void MoveTimer_Tick(object sender, EventArgs e)
         {
-            if (Player.Top < 958)
+            if (lost || pause)
+                return;
+            if ((Player.Left >= 958 && PlayerDelta.X > 0) || (Player.Left <= 17 && PlayerDelta.X < 0))
             {
-                Player.Top += PlayerSpeed;
+                PlayerDelta.X = 0;
             }
-        }
+            if ((Player.Top >= 958 && PlayerDelta.Y > 0) || (Player.Top <= 17 && PlayerDelta.Y < 0))
+            {
+                PlayerDelta.Y = 0;
+            }
+            Player.Location += new Size(PlayerDelta.X * PlayerSpeed, PlayerDelta.Y * PlayerSpeed);
 
-        //Moving Left
-        private void MoveLeftTimer_Tick(object sender, EventArgs e)
-        {
-            if (Player.Left > 17)
-            {
-                Player.Left -= PlayerSpeed;
-            }
-        }
-
-        //Moving Right
-        private void MoveRightTimer_Tick(object sender, EventArgs e)
-        {
-            if (Player.Left < 958)
-            {
-                Player.Left += PlayerSpeed;
-            }
         }
 
         //Key Detection
@@ -171,20 +143,16 @@ namespace PaintRunner
                 switch (e.KeyCode)
                 {
                     case (Keys.W):
-                        MoveTimersStop();
-                        MoveUpTimer.Start();
+                        PlayerDelta = new Point(0, -1);
                         break;
                     case (Keys.A):
-                        MoveTimersStop();
-                        MoveLeftTimer.Start();
+                        PlayerDelta = new Point(-1, 0);
                         break;
                     case (Keys.S):
-                        MoveTimersStop();
-                        MoveDownTimer.Start();
+                        PlayerDelta = new Point(0, 1);
                         break;
                     case (Keys.D):
-                        MoveTimersStop();
-                        MoveRightTimer.Start();
+                        PlayerDelta = new Point(1, 0);
                         break;
                 }
 
@@ -196,17 +164,14 @@ namespace PaintRunner
         {
             //Reset Player
             Player.Location = new Point(947, 26);
+            PlayerDelta = Point.Empty;
 
             //Reset scores
             scores = new int[6];
 
             //Reset Enemies
             Enemy01.Location = Enemy01Start;
-
-            XEnemy02 = 1050;
-            YEnemy02 = 894;
-            Enemy02First = false;
-            Enemy02.Location = new Point(1050, 894);
+            Enemy02.Location = Enemy02Start;
 
             XEnemy03 = 1340;
             YEnemy03 = 763;
@@ -255,8 +220,7 @@ namespace PaintRunner
             Enemy03Speed = 0;
             Enemy04Speed = 0;
 
-            //Reset Timer
-            MoveTimersStop();
+            MoveTimer.Start();
 
             EnemyTimersStart();
 
@@ -287,8 +251,7 @@ namespace PaintRunner
 
                     PauseButton.Text = "WEITER";
 
-                    //Stopping all Timers
-                    MoveTimersStop();
+                    PlayerDelta = Point.Empty;
 
                     EnemyTimersStop();
 
@@ -311,12 +274,12 @@ namespace PaintRunner
             if (score > 999)
             {
                 //Calculates a vector direction between the enemy and the Player and moves Enemy in that direction
-                PointF direction = new PointF(Player.Location.X -Enemy01.Location.X, Player.Location.Y - Enemy01.Location.Y);
-                float len = (float)Math.Sqrt(direction.X *direction.X + direction.Y *direction.Y);
-                direction.X = (direction.X / len *Enemy01Speed);
-                direction.Y = (direction.Y / len *Enemy01Speed);
+                PointF direction = new PointF(Player.Location.X - Enemy01.Location.X, Player.Location.Y - Enemy01.Location.Y);
+                float len = (float)Math.Sqrt(direction.X * direction.X + direction.Y * direction.Y);
+                direction.X = (direction.X / len * Enemy01Speed);
+                direction.Y = (direction.Y / len * Enemy01Speed);
                 Console.WriteLine(direction.ToString());
-                Enemy01.Location = new Point(Enemy01.Location.X + (int)direction.X,Enemy01.Location.Y +(int)direction.Y);
+                Enemy01.Location = new Point(Enemy01.Location.X + (int)direction.X, Enemy01.Location.Y + (int)direction.Y);
                 if (Player.Bounds.IntersectsWith(Enemy01.Bounds))
                 {
                     if (!ShieldActive)
@@ -431,7 +394,6 @@ namespace PaintRunner
                         Foods[i].Image = img;
                         return;
                     }
-                    Console.WriteLine(StateOfFoods[i]);
                     score += FoodStates[StateOfFoods[i]];
                     Scoreboard.Text = "Score: " + score;
                     scores[StateOfFoods[i]]++;
@@ -472,17 +434,17 @@ namespace PaintRunner
         }
         private void Lost()
         {
+            lost = true;
+            //Stopping all Timers
+            PlayerDelta = Point.Empty;
 
-                //Stopping all Timers
-                MoveTimersStop();
+            EnemyTimersStop();
 
-                EnemyTimersStop();
+            FoodCollectionTimer.Stop();
 
-                FoodCollectionTimer.Stop();
+            //LostScreen
+            LostScreen.Visible = true;
 
-                //LostScreen
-                LostScreen.Visible = true;
-            
         }
 
         //SpeedBoostTimer
